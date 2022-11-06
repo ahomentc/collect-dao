@@ -16,6 +16,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import FilterNoneIcon from '@mui/icons-material/FilterNone';
+import IconButton from '@mui/material/IconButton';
 
 import {
     PublicationDocument, 
@@ -139,11 +140,68 @@ const SimplePublication = (props) => {
                             {content}
                         </div>
                     </ListItem>
-                    {/* <ListItem style={{paddingTop: "0px"}}>
-                        <div style={{padding: "5px", paddingTop: "0px", maxWidth: "100%"}}>
-                            {content}
-                        </div>
-                    </ListItem> */}
+                    <ListItem 
+                        style={{ 
+                            fontSize: "14px",
+                        }}
+                    >
+                        <a 
+                            onClick={(e) => {e.stopPropagation(); window.open("https://lensport.io/p/" + props.profileId + "_" + props.pubId)}}
+                        >
+                            <IconButton
+                                style={{
+                                    fontSize: "14px",
+                                    marginRight: "5px",
+                                    padding: "5px"
+                                }}>
+                                <FilterNoneIcon
+                                    style={{
+                                        height: "20px",
+                                        width: "20px"
+                                    }} 
+                                />
+                            </IconButton>
+                        </a>
+                        {totalAmountOfCollects}
+                        <a 
+                            onClick={(e) => {e.stopPropagation(); window.open("https://lensport.io/p/" + props.profileId + "_" + props.pubId + "/thread")}}
+                        >
+                            <IconButton
+                                style={{
+                                    fontSize: "14px",
+                                    marginRight: "5px",
+                                    marginLeft: "20px",
+                                    padding: "5px"
+                                }}>
+                                <ChatBubbleOutlineIcon
+                                    style={{
+                                        height: "20px",
+                                        width: "20px"
+                                    }} 
+                                />
+                            </IconButton>
+                        </a>
+                        {totalAmountOfComments}
+                        <a 
+                            onClick={(e) => {e.stopPropagation();}}
+                        >
+                            <IconButton
+                                style={{
+                                    fontSize: "14px",
+                                    marginRight: "5px",
+                                    marginLeft: "20px",
+                                    padding: "5px"
+                                }}>
+                                <SwapHorizIcon
+                                    style={{
+                                        height: "20px",
+                                        width: "20px"
+                                    }} 
+                                />
+                            </IconButton>
+                        </a>
+                        {totalAmountOfMirrors}
+                    </ListItem>
                 </>
             :
                 <div style={{

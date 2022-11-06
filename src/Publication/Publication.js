@@ -146,12 +146,16 @@ const Publication = (props) => {
                         alignItems: 'baseline', 
                         justifyContent: 'center', 
                         marginLeft: "auto",
-                        marginTop: "10px",
+                        marginTop: "30px",
                         marginRight: "auto",
                         maxWidth: window.innerWidth < 700 ? "95%" : "1000px",
                     }} spacing={2} columns={{ xs: 12 }}>
                     <Button variant="outlined" onClick={() => window.open(govLink)} style={{
-                            textTransform: "none"
+                            textTransform: "none",
+                            color: "#423bff",
+                            borderColor: "#423bff",
+                            borderRadius: "10px",
+                            width: window.innerWidth < 300 ? "95%" : "300px",
                         }}>
                         Open DAO
                     </Button>
@@ -162,12 +166,14 @@ const Publication = (props) => {
                         alignItems: 'baseline', 
                         justifyContent: 'center', 
                         marginLeft: "auto",
-                        marginTop: "20px",
+                        marginTop: "30px",
+                        marginBottom: "10px",
                         marginRight: "auto",
                         maxWidth: window.innerWidth < 700 ? "95%" : "1000px",
+                        fontWeight: "bold"
                     }} container spacing={2} columns={{ xs: 2, sm: 10, md: 12 }}>
                     <div>
-                        Your NFTs:
+                        Collects you own:
                     </div>
                 </Grid>
                 { finishedFetchingNfts.current ?
@@ -224,6 +230,7 @@ const Publication = (props) => {
                 }
 
             </Grid>
+            <div style={{ height: "20vh" }} ></div> {/* padding */}
         </>
     )
 }

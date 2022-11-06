@@ -434,13 +434,13 @@ const Create = (props) => {
                                     color: "#fff",
                                     marginTop: "10px",
                                     ":hover": {
-                                    backgroundColor: "#222",
+                                    backgroundColor: "#302cad",
                                     color: "#fff",
-                                    borderColor: "#222"
+                                    borderColor: "#302cad"
                                     }
                                 }}
                                 variant="outlined">
-                                    Create DAO and Post
+                                    Create DAO Post
                                 </Button>
                                 </div>
                             </>

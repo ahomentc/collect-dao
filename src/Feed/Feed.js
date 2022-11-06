@@ -64,7 +64,7 @@ const Feed = (props) => {
                         fontSize: "16px",
                         fontWeight: "bold"
                     }}>
-                        DAO posts created:
+                        DAO Posts Feed
                     </div>
                 </Grid>
                 <Grid item xs={12} spacing={2} columns={{ xs: 12 }} style={{
