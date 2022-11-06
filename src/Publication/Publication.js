@@ -32,6 +32,7 @@ const Publication = (props) => {
     const accountRef = useRef()
     const fetchedNftsRef = useRef(false)
     const finishedFetchingNfts = useRef(false)
+    const finishedFetchingWrappedNfts = useRef(false)
     const [govLink, setGovLink] = useState()
     const [collectAddress, setCollectAddress] = useState()
     const [wrappedCollectAddress, setWrappedCollectAddress] = useState()
@@ -109,6 +110,7 @@ const Publication = (props) => {
                 setNfts(_nfts)
               }
             }
+            finishedFetchingNfts.current = true
             const stakedNftsRetrieved = await usersNfts(accountRef.current, wrappedCollectAddressRef.current);
             if (stakedNftsRetrieved.items) {
               const _nfts = stakedNftsRetrieved.items
@@ -116,7 +118,7 @@ const Publication = (props) => {
                 setStakedNfts(_nfts)
               }
             }
-            finishedFetchingNfts.current = true
+            finishedFetchingWrappedNfts.current = true
           }
         }, 100)
       })();
@@ -176,7 +178,7 @@ const Publication = (props) => {
                         Collects you own:
                     </div>
                 </Grid>
-                { finishedFetchingNfts.current ?
+                { finishedFetchingWrappedNfts.current ?
                     stakedNfts &&
                         <Grid item xs={12}
                             style={{
