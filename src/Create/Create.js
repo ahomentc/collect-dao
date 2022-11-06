@@ -17,6 +17,10 @@ import {
 } from "../ContractInteractions.js"
 
 import {
+    firebaseFunctionsUrl
+} from "../FirebaseInteractions.js"
+
+import {
     ProfileDocument, 
     SingleProfileQueryRequest,
   } from '../LensAPI/generated.ts';
@@ -25,7 +29,7 @@ const Web3 = require('web3');
 const ipfs = require("ipfs-http-client")
 var crypto = require('crypto');
 
-const Home = (props) => {
+const Create = (props) => {
     const [started, setStarted] = useState(false)
     const [finishedCreation, setFinishedCreation] = useState(false)
     const [postText, setPostText] = useState("");
@@ -37,6 +41,8 @@ const Home = (props) => {
     const [wrappedCollectBlocknumberInfo, setWrappedCollectBlocknumberInfo] = useState()
     const [govAddressInfo, setGovAddressInfo] = useState()
     const [govBlocknumberInfo, setGovBlocknumberInfo] = useState()
+    const [profileIdInfo, setProfileIdInfo] = useState()
+    const [pubIdInfo, setPubIdInfo] = useState()
 
     const web3Provider = "https://polygon-mainnet.g.alchemy.com/v2/5MNL9hFB1ZUt4GfvpvDEFho2iN1eDinP"
 
@@ -184,6 +190,8 @@ const Home = (props) => {
                             const pubIdHex = topics[2]
                             const profileId = parseInt(profileIdHex, 16).toString()
                             const pubId = parseInt(pubIdHex, 16).toString()
+                            setProfileIdInfo(profileId)
+                            setPubIdInfo(pubId)
                             cb({profileId: profileId, pubId: pubId, contractAddress: receipt.contractAddress})
                         }
                     }
@@ -250,7 +258,7 @@ const Home = (props) => {
                     createWrappedCollect(collectContract, (wrappedCollectObj) => {
                         const wrappedCollectAddress = wrappedCollectObj.contractAddress
                         const wrappedCollectBlocknumber = wrappedCollectObj.blockNumber
-                        createGov(wrappedCollectAddress, timelock_contract_address, (govObj) => {
+                        createGov(wrappedCollectAddress, timelock_contract_address, async (govObj) => {
                             const govContractAddress = govObj.contractAddress
                             const govBlocknumber = govObj.blockNumber
 
@@ -259,10 +267,26 @@ const Home = (props) => {
                             setGovAddressInfo(govContractAddress)
                             setGovBlocknumberInfo(govBlocknumber)
 
+                            // Save in database
+                            var messageForServer = {
+                                profileId: profileId,
+                                pubId: pubId,
+                                collectAddress: collectContract,
+                                wrappedCollectAddress: wrappedCollectAddress,
+                                wrappedCollectBlocknumber: wrappedCollectBlocknumber,
+                                govContractAddress: govContractAddress,
+                                govBlocknumber: govBlocknumber
+                            };
+                            const messageJSON = JSON.stringify(messageForServer);
+                            var messageBuff = new Buffer(messageJSON);
+                            var encodedMessage = messageBuff.toString('base64');
+                        
+                            const url = firebaseFunctionsUrl + "/DaoCreated?params=" + encodedMessage
+                            const response = await fetch(url);
+                            const data = await response.json();
+                        
                             setFinishedCreation(true)
                             setStarted(false)
-
-                            // Save these to database too
                         })
                     })
                 })
@@ -406,7 +430,7 @@ const Home = (props) => {
                                     borderRadius: '10px', 
                                     fontSize: "15px", 
                                     fontWeight: "bold",
-                                    backgroundColor: "#000",
+                                    backgroundColor: "#423bff",
                                     color: "#fff",
                                     marginTop: "10px",
                                     ":hover": {
@@ -426,53 +450,12 @@ const Home = (props) => {
                 { finishedCreation ?
                     <>
                         <Grid item xs={12}
-                        style={{
-                            display: 'flex', 
-                            alignItems: 'baseline', 
-                            justifyContent: 'center', 
-                            marginLeft: "auto",
-                            marginTop: "50px",
-                            marginRight: "auto",
-                            maxWidth: window.innerWidth < 700 ? "95%" : "1000px",
-                        }} container spacing={2} columns={{ xs: 2, sm: 10, md: 12 }}>
-                            <Paper style={{
-                                width: "500px",
-                                padding: "10px" 
-                            }}>
-                                <div style={{
-                                    width: "100%",
-                                    fontWeight: "bold",
-                                    marginTop: "5px"
-                                }}>DAO Info: </div>
-                                <div style={{
-                                    width: "100%",
-                                    marginTop: "5px"
-                                }}>Token Address: {wrappedCollectAddressInfo}</div>
-                                <div style={{
-                                    width: "100%",
-                                    marginTop: "5px"
-                                }}>Token Blocknumber: {wrappedCollectBlocknumberInfo}</div>
-                                <div style={{
-                                    width: "100%",
-                                    marginTop: "5px"
-                                }}>Gov Address: {govAddressInfo}</div>
-                                <div style={{
-                                    width: "100%",
-                                    marginTop: "5px"
-                                }}>Gov Blocknumber: {govBlocknumberInfo}</div>
-                                <div style={{
-                                    width: "100%",
-                                    marginTop: "5px"
-                                }}>Network: Polygon</div>
-                            </Paper>
-                        </Grid>
-                        <Grid item xs={12}
                             style={{
                                 display: 'flex', 
                                 alignItems: 'baseline', 
                                 justifyContent: 'center', 
                                 marginLeft: "auto",
-                                marginTop: "10px",
+                                marginTop: "50px",
                                 marginRight: "auto",
                                 maxWidth: window.innerWidth < 700 ? "95%" : "1000px",
                             }} container spacing={2} columns={{ xs: 2, sm: 10, md: 12 }}>
@@ -486,7 +469,7 @@ const Home = (props) => {
                                             borderRadius: '10px', 
                                             fontSize: "15px", 
                                             fontWeight: "bold",
-                                            backgroundColor: "#000",
+                                            backgroundColor: "#423bff",
                                             color: "#fff",
                                             marginTop: "10px",
                                             ":hover": {
@@ -496,7 +479,7 @@ const Home = (props) => {
                                             }
                                         }}
                                         variant="outlined">
-                                            Finish at tally.xyz
+                                            Continue on tally.xyz
                                         </Button>
                                     </div>
                                     <div style={{ marginTop: "10px" }}>
@@ -511,12 +494,122 @@ const Home = (props) => {
                                     </div>
                                 </div>
                         </Grid>
+                        <Grid item xs={12}
+                        style={{
+                            display: 'flex', 
+                            alignItems: 'baseline', 
+                            justifyContent: 'center', 
+                            marginLeft: "auto",
+                            marginTop: "20px",
+                            marginRight: "auto",
+                            maxWidth: window.innerWidth < 700 ? "95%" : "1000px",
+                        }} container spacing={2} columns={{ xs: 2, sm: 10, md: 12 }}>
+                            <Paper elevation={0} style={{
+                                width: "500px",
+                                padding: "20px",
+                                borderStyle: "solid",
+                                borderColor: "#eee",
+                                borderWidth: "1px",
+                                boxShadow: "0px 1px 5px #ddd",
+                            }}>
+                                <div style={{
+                                    width: "100%",
+                                    textAlign: "center",
+                                    marginTop: "5px"
+                                }}>Enter this on tally.xyz when prompted: </div>
+                                <div style={{
+                                    width: "100%",
+                                    fontWeight: "bold",
+                                    marginTop: "15px"
+                                }}>Governor: </div>
+                                <div style={{
+                                    width: "100%",
+                                    marginTop: "5px"
+                                }}>Governance Contract: {govAddressInfo}</div>
+                                <div style={{
+                                    width: "100%",
+                                    marginTop: "5px"
+                                }}>Network: Polygon Mainnet</div>
+                                <div style={{
+                                    width: "100%",
+                                    marginTop: "5px"
+                                }}>Type: Open Zeppelin Governor</div>
+                                <div style={{
+                                    width: "100%",
+                                    marginTop: "5px"
+                                }}>Start Block: {govBlocknumberInfo}</div>
+                                <div style={{
+                                    width: "100%",
+                                    fontWeight: "bold",
+                                    marginTop: "10px"
+                                }}>Token: </div>
+                                <div style={{
+                                    width: "100%",
+                                    marginTop: "5px"
+                                }}>Token Address: {wrappedCollectAddressInfo}</div>
+                                <div style={{
+                                    width: "100%",
+                                    marginTop: "5px"
+                                }}>Token Type: ERC721</div>
+                                <div style={{
+                                    width: "100%",
+                                    marginTop: "5px"
+                                }}>Start Block: {wrappedCollectBlocknumberInfo}</div>
+                                
+                            </Paper>
+                        </Grid>
+                        <Grid item xs={12}
+                            style={{
+                                display: 'flex', 
+                                alignItems: 'baseline', 
+                                justifyContent: 'center', 
+                                marginLeft: "auto",
+                                marginTop: "50px",
+                                marginRight: "auto",
+                                maxWidth: window.innerWidth < 700 ? "95%" : "1000px",
+                            }} container spacing={2} columns={{ xs: 2, sm: 10, md: 12 }}>
+                                <div>
+                                    <div style={{ marginTop: "10px" }}>
+                                        <Button
+                                        onClick={() => window.open("/p/" + profileIdInfo + "_" + pubIdInfo)}
+                                        sx={{ 
+                                            width: "200px",
+                                            textTransform: 'none', 
+                                            borderRadius: '10px', 
+                                            fontSize: "15px", 
+                                            fontWeight: "bold",
+                                            backgroundColor: "#423bff",
+                                            color: "#fff",
+                                            marginTop: "10px",
+                                            ":hover": {
+                                            backgroundColor: "#222",
+                                            color: "#fff",
+                                            borderColor: "#222"
+                                            }
+                                        }}
+                                        variant="outlined">
+                                            Done with Tally
+                                        </Button>
+                                    </div>
+                                    <div style={{ marginTop: "10px" }}>
+                                        <div style={{
+                                            width: "200px",
+                                            fontSize: "12px",
+                                            color: "#aaa",
+                                            textAlign: "center"
+                                        }}>
+                                            Click this when you finish on Tally
+                                        </div>
+                                    </div>
+                                </div>
+                        </Grid>
                     </>
                     : <></>
                 }
             </Grid>
+            <div style={{ height: "20vh" }} ></div>
         </>
     )
 }
 
-export default Home;
+export default Create;

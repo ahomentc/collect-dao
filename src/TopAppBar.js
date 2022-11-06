@@ -35,7 +35,7 @@ function WalletButton({ provider, loadWeb3Modal, logoutOfWeb3Modal }) {
 
   return (
     <>
-      <Button style={{backgroundColor: "#000", color: "#fff", fontSize: "12px", fontWeight: "600", marginTop: "0px", marginRight: "0px", width: "140px"}}
+      <Button style={{ backgroundColor: "#423bff", color: "#fff", borderRadius: "7px", fontSize: "12px", fontWeight: "600", marginTop: "0px", marginRight: "0px", width: "140px"}}
         onClick={() => {
           if (!provider) {
             loadWeb3Modal();

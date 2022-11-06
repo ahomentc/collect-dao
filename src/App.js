@@ -1,4 +1,6 @@
-import Home from './Home/Home.js';
+import Feed from './Feed/Feed.js';
+import Create from './Create/Create.js';
+import Publication from './Publication/Publication.js';
 import './App.css';
 import React, { useEffect, useState, useRef } from "react";
 import { TopAppBar } from './TopAppBar.js'
@@ -7,12 +9,7 @@ import useWeb3Modal from "./useWeb3Modal";
 import client from './apollo.js';
 
 import {
-  ProfileDocument, 
-  SingleProfileQueryRequest,
   NftsDocument,
-  NfTsRequest,
-  DefaultProfileDocument, 
-  DefaultProfileRequest
 } from './LensAPI/generated.ts';
 
 function App() {
@@ -151,7 +148,9 @@ function App() {
 
       </div>
       <Routes>
-        <Route path="/" element={<Home provider={provider} account={account} profileId={profileId} />} />
+        <Route path="/" element={<Feed provider={provider} account={account} profileId={profileId} />} />
+        <Route path="/create" element={<Create provider={provider} account={account} profileId={profileId} />} />
+        <Route path="/p/:id" element={<Publication provider={provider} account={account} profileId={profileId} />} />
       </Routes>
     </>
   );
